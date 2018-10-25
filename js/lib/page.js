@@ -1,4 +1,16 @@
 'use strict';
+/*
+* js/lib/events.js
+*/
+
+function $pageData( pages ){
+  for( let page of pages ){
+    //$data( 'main', page, '' );
+    document.querySelector('main').setAttribute(`data-${page}`,'');
+  }
+
+}
+
 function $pageView( page_id ) {
   //let location_hash = location.hash;
   //let page_id = location_hash === '#' ? 'dashboard' : location_hash.slice(1);
@@ -22,18 +34,15 @@ function $pageView( page_id ) {
 
 }
 function $loadPage( page_id, callback ){
-  $('main').hide();
-  $.ajax({url: `html/page/${page_id}.html`}).done( ( data ) => {
-    $('main').html( data );
-    $('main').fadeIn();
+  $( 'main' ).hide();
+  $.ajax( { url: `html/page/${page_id}.html` } ).done( ( response ) => {
+    $( 'main' ).html( response );
+    $( 'main' ).fadeIn();
     callback();
   });
 }
 
-function $setMainData(){
-  document.querySelector('main').setAttribute('data-notities','');
-  document.querySelector('main').setAttribute('data-projecten','');
-}
+
 
 function $settings(){
   console.log('test');

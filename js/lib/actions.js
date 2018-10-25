@@ -14,7 +14,7 @@ function $add( object, callback ){
   let add_form = $buildFormFromObjProps( object,
     '.add_form_container',
     () => {
-      $form_select_projecten(); // vervang input projecten met select
+      $form_select_projecten( '.add_form_container form' ); // vervang input projecten met select
       $formInputDateToday(); // datum van vandaag in input.date
       //location.hash = `${obj_name}/add`;
 
@@ -37,15 +37,17 @@ function $add( object, callback ){
     $data( 'main', obj_name, current_data );
     $alert( 'success','info-circle', `${full_name} '${add_data.name}' is toegevoegd`);
     //$overview( $data( '.overview', 'items' ), current_data, object );
+    if( $callback.$add() ) $callback.$add();
     callback();
 
 
 
   }); // $formSubmit
-  $( '.add_form_modal' ).on('shown', () => {
+  $( '.add_form_modal' ).on('shown.bs.modal', () => {
     $('.view_container').html('');
     location.hash = `${obj_name}/add`;
   }).on('hidden.bs.modal', () =>{
+    console.log( 'close modal')
     location.hash = `${obj_name}`;
   });
 }
@@ -59,22 +61,23 @@ let $callback = {};
 
 function $overview( items, data, object, callback, callback_view, callback_update, callback_delete ){
 
-  $overviewTable( '.overview_container', data, items, object)
+  //if( data.length > 0 ){
+    $overviewTable( '.overview_container', data, items, object)
 
-  $overviewTableActions( object, ()=>{
-      //callback();
-      if( $callback.overview() ) $callback.overview();
-  },() => {
-      //callback_view()
-      if( $callback.view() ) $callback.view();
-  },() =>{
-      //callback_update()
-      if( $callback.update() ) $callback.update();
-  },() =>{
-      //callback_delete()
-      if( $callback.del() ) $callback.del();
-  });
-
+    $overviewTableActions( object, ()=>{
+        //callback();
+        if( $callback.$overview() ) $callback.$overview();
+      },() => {
+        //callback_view()
+        if( $callback.$view() ) $callback.$view();
+      },() =>{
+        //callback_update()
+        if( $callback.$update() ) $callback.$update();
+      },() =>{
+        //callback_delete()
+        if( $callback.$delete() ) $callback.$delete();
+      });
+  //}
 
 }
 
@@ -114,6 +117,7 @@ function $overviewTableEvents() {
   if ( typeof jQuery != 'undefined' ) {
     // jquery-timeago
     $( 'td.date' ).timeago();
+    // $( '.table' ).DataTable();
   }
 }
 
@@ -131,6 +135,7 @@ function $overviewTableActions( object, callback, callback_view, callback_update
 
     let item_data = overview_tr.getAttribute( 'data-item' );
     item_data = JSON.parse( item_data );
+
     let update_action = document.createElement( 'i' );
     update_action.setAttribute( 'class', 'fas fa-edit' );
     update_action.addEventListener( 'click', (event) => {
@@ -139,10 +144,9 @@ function $overviewTableActions( object, callback, callback_view, callback_update
         //$overview( $data( '.overview', 'items' ), $data( 'main', obj_name ), object );
         callback_update();
       });
-
-
     });
     overview_tr_td.appendChild( update_action );
+
     let delete_action = document.createElement( 'i' );
     delete_action.setAttribute( 'class', 'fas fa-times' );
     delete_action.addEventListener( 'click', (event) => {
@@ -151,10 +155,9 @@ function $overviewTableActions( object, callback, callback_view, callback_update
         //$overview( $data( '.overview', 'items' ), $data( 'main', obj_name ), object );
         callback_delete();
       });
-
-
     });
     overview_tr_td.appendChild( delete_action );
+
     overview_tr.appendChild( overview_tr_td );
     overview_tr.setAttribute( 'class', 'pointer' );
     overview_tr.addEventListener( 'click', (event) => {
@@ -198,7 +201,9 @@ function $update( object, data, callback ){
   let full_name = object.fullName();
   let update_form = $buildFormFromObjProps(object,
     '.update_form_container',() => {
-      //$form_select_projecten(); // vervang input projecten met select
+
+
+
       for( let item in data ){
         if( data.hasOwnProperty(item) ) {
           //console.log( item + ' : ' + data[ item ] );
@@ -221,12 +226,14 @@ function $update( object, data, callback ){
         });
       });
       document.querySelector( '.update_form_container form .footer' ).appendChild( delete_btn );
+      $form_select_projecten(  '.update_form_container form', data.project ); // vervang input projecten met select
       $( '.update_form_modal' )
         .modal( 'toggle' )
         .on('shown', () => {
 
         }).on('hidden.bs.modal', () =>{
           location.hash = `${obj_name}`;
+          $overview( $data( '.overview', 'items' ), $data( 'main', obj_name ), object );
         });
         setTimeout( () => {
           $('.view_container').html('');
@@ -258,6 +265,20 @@ function $update( object, data, callback ){
 // delete
 // -----------------------------------------------------------------------------
 function $delete( object, data, callback ){
+  // bevestiging bij delete
+  /*
+  $( '.update_form_modal' ).on('shown.bs.modal', () => {
+    // modal wordt weergegeven
+
+  }).on('hidden.bs.modal', () =>{
+    // modal
+    $( '.update_form_modal' ).modal( 'toggle' );
+  });
+
+  let confirm_msg = document.createElement( 'div' );
+  confirm_msg.setAttribute( 'style', 'padding:25px;' );
+  confirm_msg.innerHTML = `Bevestig verwijderen ${object.fullName(true)} '${data.name}' `;
+  */
   let obj_name = object.shortName();
   let full_name = object.fullName();
   let updated_data = [];

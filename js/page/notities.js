@@ -10,18 +10,20 @@ function $_Notities(){
 
 
   $callback = {
-    overview: ()=>{
-      console.log( '$overview notities' );
+    '$overview': ()=>{
+    
     },
-    view: () => {
-      let view = $data( '.overview','selected' );
-      console.log( `$view notitie ${view.id}` )
+    '$add': ()=>{
+
     },
-    update: ()=> {
-      console.log( '$update notities' )
+    '$view': () => {
+
     },
-    del: ()=> {
-      console.log( '$delete notities' )
+    '$update': ()=> {
+
+    },
+    '$delete': ()=> {
+
     }
   }
 
@@ -31,7 +33,7 @@ function $_Notities(){
       $overview( notities_overview_items, $data( 'main','notities' ), notities);
       let notitie_add_data = $data( '.add_form_container form', 'added' ); // toegevoegde data
       notities = new Notitie( notitie_add_data );
-      console.log( notitie_add_data.id +' added' );
+
       console.table( notitie_add_data );
   });
 

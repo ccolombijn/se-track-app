@@ -2,7 +2,11 @@
 /*
 * js/lib/events.js
 */
+
+// click; a.nav-link wordt aangeklikt
+// -----------------------------------------------------------------------------
 function $clickEvent( callback ) {
+  // nav-links
   let nav_links = document.querySelectorAll( 'a.nav-link' );
   for( let nav_link of nav_links ) {
     let nav_link_href = nav_link.getAttribute( 'href' );
@@ -14,6 +18,7 @@ function $clickEvent( callback ) {
       callback();
     });
   }
+  // settings
   let settings_links = document.querySelectorAll( 'a.settings' );
   for( let settings_link of settings_links ) {
     settings_link.addEventListener( 'click', (event) => {
@@ -22,35 +27,133 @@ function $clickEvent( callback ) {
   }
 }
 
+
+
+
+// location;   adresbalk (#hash) wordt aangepast (link in pagina)
+// -----------------------------------------------------------------------------
+function $locationEvent(){
+  let location = location.hash.slice(1),
+  location_array = location.split('/'),
+  page = location_array[0],
+  action = location_array[1],
+  param = location_array[2],
+  location_data = $data( 'main', 'location' ); // opgeslagen locatie
+  // event; huidige locatie komt niet overeen met opgeslagen locatie
+  if( location_data !== location ){
+    // data
+    let data = $data( 'main', page );
+    let items = [];
+    for( let item in data ){
+      items.push( item );
+    }
+    // object
+    let obj = $callObj( page );
+    // call
+    $pageView( page, () => {
+
+      if( action ) $actionCall( action, obj, data, items );
+
+      $data( 'main', 'location', location ); // locatie opslaan
+
+    });
+
+  }
+  // iedere halve seconde controleren of locatie gewijzigd is
+  setInterval( $locationEvent() , 500);
+}
+
+function $actionCall( action, obj, data, items ){
+
+  switch ( action ) {
+
+    case 'overview':
+      $overview( items, data, obj, () => {
+        if( $callback.$overview() ) $callback.$overview();
+      });
+      break;
+
+    case 'add':
+      $add( obj, () => {
+        if( $callback.$add() ) $callback.$add();
+      });
+      break;
+
+    case 'view':
+      $view( data, obj, () => {
+        if( $callback.$view() ) $callback.$view();
+      });
+      break;
+
+    case 'update':
+      $update( obj, data, () => {
+        if( $callback.$update() ) $callback.$update();
+      });
+      break;
+
+    case 'delete':
+      $delete( obj, data, () => {
+        if( $callback.$delete() ) $callback.$delete();
+      });
+      break;
+
+
+  }
+}
+
+function $callObj( obj, args ){
+  let obj_inst;
+  switch (obj) {
+    case 'notities':
+      obj_inst = new Notitie( args );
+      break;
+    case 'projecten':
+      obj_inst = new Project( args );
+
+  }
+  return obj_inst;
+}
+
+
+// search
+// -----------------------------------------------------------------------------
 function $searchEvent(){
+
   let search_input = document.querySelector( 'input.search' );
   let search_results_div = document.createElement( 'div' );
   search_results_div.setAttribute( 'class', 'search-results' );
+
   search_input.addEventListener( 'keyup', ( event ) => {
+    search_results_div.innerHTML = '';
     let search_query = search_input.value;
     let search_results = [];
     let projecten = $data( 'main', 'projecten' );
+
     for( let project of projecten ){
       if( new RegExp( search_query ).test( project.name ) ){
         search_results.push( { result: 'projecten',id : project.id, name: project.name }  )
       }
     }
+
     let notities = $data( 'main', 'notities' );
     for( let notitie of notities ){
       if( new RegExp( search_query ).test( notitie.name ) ){
         search_results.push( { result: 'notities',id : notitie.id, name: notitie.name } )
       }
     }
+
     console.log( search_results );
+
+    for( let result of search_results ){
+
+      let result_text = result.name;
+      result_text.replace( search_query, `<b>${search_query}</b>` );
+      let result_element = document.createElement( 'a' );
+      result_element.setAttribute( 'href', `#${result.result}/view/${result.id}` );
+      result_element.innerHTML = result_text;
+      search_results_div.appendChild( result_element );
+
+    }
   });
 
-}
-
-function $event( trigger, target, callback ){
-  let elements = document.querySelectorAll( target );
-  for( let element of elements ){
-    element.addEventListener( trigger, (event) => {
-      callback();
-    });
-  }
 }

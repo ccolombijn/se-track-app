@@ -3,41 +3,69 @@
 * js/page/projecten.js
 */
 function $_Projecten(){
-  let projecten = new Project;
-  let projecten_main_data = $data( 'main', 'projecten' );
-  let projecten_overview_items = [ 'name', 'date' ];
+
+  let projecten = new Project; // class instantie
+  let projecten_main_data = $data( 'main', 'projecten' ); // page data
+  let projecten_overview_items = [ 'name', 'date' ]; // kolommen overzicht
 
 
   $callback = {
-    overview: ()=>{
-      console.log( '$overview projecten' );
+    '$overview': () => {
+
     },
-    view: () => {
-      console.log( '$view projecten' )
+    '$add': () => {
+
     },
-    update: ()=> {
-      console.log( '$update projecten' )
+    '$view': () => {
+
+      $view_notities(); // notities bij project
+
     },
-    del: ()=> {
-      console.log( '$delete projecten' )
+    '$update': () => {
+
+    },
+    '$delete': () => {
+
     }
   }
 
-  $overview( projecten_overview_items, projecten_main_data, projecten);
+  $overview( projecten_overview_items, projecten_main_data, projecten );
 
   $add( projecten, () => {
-    $overview( projecten_overview_items, $data( 'main','projecten' ), projecten);
+    $overview( projecten_overview_items, $data( 'main', 'projecten' ), projecten );
     let project_add_data = $data( '.add_form_container form', 'added' );
     projecten = new Project( project_add_data );
   });
 }
 
-function $form_select_projecten(){
+function $view_notities(){
 
-  let form_group = document.querySelector( '.form-group#form-group_project' );
-  let input = document.querySelector( '.form-group#form-group_project .col-input input' );
-  let select_ = document.querySelector( '.form-group#form-group_project .col-input select' );
+  let current_view = $data( '.overview', 'selected' );
+  let notities_data = $data( 'main', 'notities' );
+  let notities_obj = new Notitie;
+  let project_notities = [];
+
+  for( let notitie of notities_data ){
+    if( current_view.id == notitie.project ){
+      project_notities.push( notitie );
+    }
+  }
+
+  if( project_notities.length > 0 ){
+    $overviewTable( '.notities', project_notities, ['name','date'], notities_obj, () => {
+      let notities_header = document.createElement( 'h4' );
+      notities_header.innerHTML = `${project_notities.length} notities`;
+      let notities = document.querySelector( '.notities' );
+      let notities_table = document.querySelector( '.notities table' );
+      notities.insertBefore( notities_header, table );
+    });
+  }
+}
+
+function $form_select_projecten( form, id ){
+
   let projecten = $data( 'main', 'projecten' );
+
   if( projecten.length > 0 ){
     let select = document.createElement( 'select' );
     select.setAttribute( 'class','form-control' );
@@ -47,24 +75,28 @@ function $form_select_projecten(){
     option.innerHTML = '- Selecteer Project -';
     option.value = '';
     select.appendChild( option );
+
     for( let data_item of projecten ){
       option = document.createElement( 'option' );
       option.value = data_item.id;
       option.innerHTML = data_item.name;
-      if( input ){
-        if( input.value == option.value ) option.setAttribute( 'selected', 'selected' );
+
+      if( id == option.value ){
+        option.setAttribute( 'selected', 'selected' );
       }
       select.appendChild( option );
     }
 
-    let col_input = document.querySelector( '.form-group#form-group_project .col-input');
-    let placeholder = document.createElement( 'div' );
-    placeholder.appendChild( select );
+    let col_inputs = document.querySelectorAll( `${form} .form-group#form-group_project .col-input`);
+    for( let col_input of col_inputs ){
+      let input = document.getElementById( 'project' );
+      //col_input.removeChild( input );
+      col_input.innerHTML = '';
+      col_input.appendChild( select );
+    }
 
-    //if( !select_ ) col_input.removeChild( input );
-    //col_input.appendChild( select );
-    //col_input.innerHTML = placeholder.innerHTML;
   } else {
+    let form_group = document.querySelector( '.form-group#form-group_project' );
     if (form_group) form_group.setAttribute( 'style', 'display:none' );
   }
 }

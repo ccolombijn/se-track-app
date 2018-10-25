@@ -1,0 +1,6 @@
+{
+  "title" : "SE-track App",
+  "stylesheet" : "css/se-track-app_styles.css",
+  "server_sync" : false,
+  "server_endpoint" : "server/"
+}

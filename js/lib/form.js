@@ -1,4 +1,82 @@
 'use strict';
+/*
+* js/lib/form.js
+*/
+
+/*
+let object =  new Class;
+let options = {
+  placeholder : true,
+  append: true,
+  formgrid: [
+    { content: 'firstname-5;preposition-2;lastname-5' },
+    { content: 'street-6;housenumber-2;postalcode-4' }
+  ]
+};
+let form = $buildForm ( object, target, options, () => {
+  // callback na laden formulier
+});
+*/
+
+function $buildForm ( object, target, options, callback ){
+
+
+  let form = $( '<form></form>' ), added = []
+  // http://getbootstrap.com/docs/4.1/components/forms/#form-grid
+  // formgrid
+  if( options.formgrid ){
+    if( options.formgrid.length > 0 ){
+      for(let row of options.formgrid ){
+        let fields = row.content.split( ';' );
+        for( let field of fields ){
+          let field_size = field.split( '-' )[1];
+          let field_id = field.split( '-' )[0];
+          let form_group = $( '<div></div>' ).addClass( `form-group col-md-${field_size}` );
+          let input = $( '<input />' ).attr( 'id', field_id ).attr( 'name', field_id );
+          let label;
+          typeof object.PropertyLabel() !== 'undefined' ? label = object.PropertyLabel()[ field_id ] : label = field_id;
+          if( options.placeholder ){ // voeg bij alle velden placeholder toe
+            input.attr( 'placeholder', label )
+          } else {
+            if( row.placeholder ){ // voeg bij velden in deze rij placeholder toe
+              input.attr( 'placeholder', label )
+            } else if (field.split( '-' )[3] === 'placeholder' ) { // voeg bij enkel veld placeholder toe
+              input.attr( 'placeholder', label )
+            }
+          }
+          form.append( form_group);
+          added.push( field_id );
+        }
+      }
+    }
+  }
+
+  let objPropNames = Object.getOwnPropertyNames( object )
+  for( let propName of objPropNames ){
+    if( ! $contains.call( added, propName ) ){ // niet toevoegen als item al in formgrid toegevoegd is
+
+      let input = $( '<input />' ).attr( 'id', propName ).attr( 'name', propName );
+
+      if( options.placeholder ){
+
+      } else {
+
+      }
+
+      if( options.append ){
+
+      } else {
+
+      }
+
+    }
+  }
+  return form
+  callback()
+}
+
+
+
 function $buildFormFromObjProps( object, target, callback, options ) {
 
   let obj_prop_names = Object.getOwnPropertyNames( object ); // namen properties object
@@ -101,7 +179,7 @@ function $getFormData( form ) {
   // loop door .entries
   for( let item of formData.entries() ) {
     // voeg waarden toe aan data object
-    data[item[0]] = item[1];
+    data[ item[0] ] = item[1];
   }
   // geef data object terug
   return data;

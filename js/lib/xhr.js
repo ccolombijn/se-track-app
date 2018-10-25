@@ -8,7 +8,7 @@ function $xhr( type, url, data ) {
     if ( xhr.readyState === 4 && xhr.status === 200 ) {
       response = xhr.responseText;
 
-
+      
     }
   }
   // verzoek openen & verzenden

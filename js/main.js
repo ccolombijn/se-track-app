@@ -1,7 +1,11 @@
-(() => { // main
+/*
+* js/main.js
+*/
+(() => {
   'use strict';
   // laad modules met requirejs
   requirejs([
+    // tools/helpers
     'lib/xhr', // XMLHttpRequest
     'lib/dom', // DOM bewerkingen
     'lib/form', // Formulieren
@@ -11,7 +15,6 @@
     'lib/events', // Events
     'lib/actions', // Acties
     'lib/template', // Sjablonen
-    //'lib/LocalDB', // LocalDB.js http://agnostic.github.io/LocalDB.js/;
     // classes
     'class/Dashboard',
     'class/Opdracht',
@@ -31,12 +34,13 @@
   ], () => { // callback requirejs
 
     $clickEvent( () => {
-      // a.nav-link is aangeklikt en pagina is geladen;
-      console.log( $callback );
-    });
-    $searchEvent();
 
-    $setMainData();
+      // console.log( $callback );
+    });
+
+    $pageData( [ 'notities', 'projecten' ] );
+
+    $searchEvent();
 
     const _jQuery = $utilCheck_jQuery(); // jQuery?
     if( _jQuery ){
