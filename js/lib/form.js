@@ -21,7 +21,7 @@ let form = $buildForm ( object, target, options, () => {
 function $buildForm ( object, target, options, callback ){
 
 
-  let form = $( '<form></form>' ), added = []
+  let form = $( '<form></form>' ), added = [];
   // http://getbootstrap.com/docs/4.1/components/forms/#form-grid
   // formgrid
   if( options.formgrid ){

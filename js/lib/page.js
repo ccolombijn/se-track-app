@@ -1,7 +1,8 @@
 'use strict';
 /*
-* js/lib/events.js
+* js/lib/page.js
 */
+let $pages;
 
 function $pageData( pages ){
   for( let page of pages ){
@@ -12,25 +13,21 @@ function $pageData( pages ){
 }
 
 function $pageView( page_id ) {
-  //let location_hash = location.hash;
-  //let page_id = location_hash === '#' ? 'dashboard' : location_hash.slice(1);
-  //let page_data = {};
-  //let page_content = $getTemplate( `html/page/${page_id}`, page_data );
-  //$('main').load({ url: `tmpl/html/page/${page_id}.html` });
-  //$setElement( 'div#content', page_content, 'main' );
+
   $loadPage( page_id, () => {
-   switch ( page_id ) {
-     case 'notities':
+    // callback
+    // let page = $pages[ page_id ];
+    // page(); 
+    switch ( page_id ) {
+      case 'notities':
         $_Notities();
         break;
-    case 'projecten':
+      case 'projecten':
         $_Projecten();
-       break;
-     default:
+        break;
+      }
 
-   }
- });
-
+    });
 
 }
 function $loadPage( page_id, callback ){

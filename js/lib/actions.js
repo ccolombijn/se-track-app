@@ -25,6 +25,10 @@ function $add( object, callback ){
     let add_data = $getFormData( add_form ); // haal data uit formulier
 
     $( '.add_form_container input,.add_form_container textarea' ).val(''); // maak formulier leeg
+    let selects = add_form.getElementsByTagName("select");
+    for( let select of selects ){
+      select.selectedIndex = 0; // reset select
+    }
     $formInputDateToday(); // datum van vandaag in input.date
     $( '.add_form_modal' ).modal( 'toggle' ); // sluit bootstrap modal
 
@@ -37,7 +41,7 @@ function $add( object, callback ){
     $data( 'main', obj_name, current_data );
     $alert( 'success','info-circle', `${full_name} '${add_data.name}' is toegevoegd`);
     //$overview( $data( '.overview', 'items' ), current_data, object );
-    if( $callback.$add() ) $callback.$add();
+    if( $callbacks['$add'] ) $callbacks.$add();
     callback();
 
 
@@ -47,7 +51,7 @@ function $add( object, callback ){
     $('.view_container').html('');
     location.hash = `${obj_name}/add`;
   }).on('hidden.bs.modal', () =>{
-    console.log( 'close modal')
+    //console.log( 'close modal')
     location.hash = `${obj_name}`;
   });
 }
@@ -66,16 +70,17 @@ function $overview( items, data, object, callback, callback_view, callback_updat
 
     $overviewTableActions( object, ()=>{
         //callback();
-        if( $callback.$overview() ) $callback.$overview();
+        //if( $callback.$overview() ) $callback.$overview();
+        if( $callbacks[ '$overview' ] ) $callbacks.$overview();
       },() => {
         //callback_view()
-        if( $callback.$view() ) $callback.$view();
+        if( $callbacks[ '$view' ] ) $callbacks.$view();
       },() =>{
         //callback_update()
-        if( $callback.$update() ) $callback.$update();
+        if( $callbacks[ '$update' ] ) $callbacks.$update();
       },() =>{
         //callback_delete()
-        if( $callback.$delete() ) $callback.$delete();
+        if( $callbacks[ '$delete' ] ) $callbacks.$delete();
       });
   //}
 
@@ -212,6 +217,7 @@ function $update( object, data, callback ){
           update_form_input.value = data[ item ];
         }
       }
+
       document.querySelector( '.update_form_modal form button' ).innerHTML = 'Aanpassen';
       let delete_btn = document.createElement( 'button' );
       delete_btn.setAttribute( 'type','button' );
@@ -226,19 +232,10 @@ function $update( object, data, callback ){
         });
       });
       document.querySelector( '.update_form_container form .footer' ).appendChild( delete_btn );
-      $form_select_projecten(  '.update_form_container form', data.project ); // vervang input projecten met select
-      $( '.update_form_modal' )
-        .modal( 'toggle' )
-        .on('shown', () => {
+      $form_select_projecten( '.update_form_container form', data.project ); // vervang input projecten met select
+      $( '.update_form_modal' ).modal( 'toggle' );
 
-        }).on('hidden.bs.modal', () =>{
-          location.hash = `${obj_name}`;
-          $overview( $data( '.overview', 'items' ), $data( 'main', obj_name ), object );
-        });
-        setTimeout( () => {
-          $('.view_container').html('');
-          location.hash = `${obj_name}/update/${data.id}`;
-        } ,500 );
+
   }); // $buildFormFromObjProps
 
   $formSubmit( update_form, () => {
@@ -257,8 +254,16 @@ function $update( object, data, callback ){
     $alert( 'primary','info-circle', `${full_name} '${update_data.name}' is aangepast`);
     $overview( $data( '.overview', 'items' ), updated_data, object );
     location.hash = `${obj_name}`;
+
     callback();
   });
+  $( '.update_form_modal' ).on( 'shown.bs.modal', () => {
+      location.hash = `${obj_name}/update/${data.id}`;
+      $('.view_container').html('');
+    }).on('hidden.bs.modal', () =>{
+      location.hash = `${obj_name}`;
+      $overview( $data( '.overview', 'items' ), $data( 'main', obj_name ), object );
+    });
 }
 
 

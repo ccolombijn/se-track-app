@@ -6,15 +6,20 @@
 // click; a.nav-link wordt aangeklikt
 // -----------------------------------------------------------------------------
 function $clickEvent( callback ) {
-  // nav-links
+  // selecteer .nav-link
   let nav_links = document.querySelectorAll( 'a.nav-link' );
+  // loop door geselecteerde elementen
   for( let nav_link of nav_links ) {
+    // selecteer href attribute
     let nav_link_href = nav_link.getAttribute( 'href' );
     nav_link.addEventListener( 'click', ( event ) => {
+      // reset .nav-link
       for( let nav_link of nav_links ) nav_link.setAttribute( 'class', 'nav-link' );
+      // voeg .action toe bij huidig aangeklikte nav-link
       nav_link.setAttribute( 'class', 'nav-link active' );
+      // page_id op basis van locatie na #
       let page_id = nav_link_href === '#' ? 'dashboard' : nav_link_href.slice(1);
-      $pageView( page_id );
+      $pageView( page_id ); // paginaweergave op basis van page_id
       callback();
     });
   }
@@ -33,16 +38,21 @@ function $clickEvent( callback ) {
 // location;   adresbalk (#hash) wordt aangepast (link in pagina)
 // -----------------------------------------------------------------------------
 function $locationEvent(){
-  let location = location.hash.slice(1),
-  location_array = location.split('/'),
-  page = location_array[0],
-  action = location_array[1],
-  param = location_array[2],
+
+  let location = location.hash.slice(1); // locatie na # in adres
+
   location_data = $data( 'main', 'location' ); // opgeslagen locatie
   // event; huidige locatie komt niet overeen met opgeslagen locatie
   if( location_data !== location ){
+    //  array op basis van #page/action/param
+    let location_ = location.split('/'),
+    page = location_[0],
+    action = location_[1],
+    param = location_[2];
+
     // data
     let data = $data( 'main', page );
+
     let items = [];
     for( let item in data ){
       items.push( item );
@@ -109,10 +119,12 @@ function $callObj( obj, args ){
       break;
     case 'projecten':
       obj_inst = new Project( args );
-
+      break;
   }
   return obj_inst;
+
 }
+
 
 
 // search
@@ -156,4 +168,31 @@ function $searchEvent(){
     }
   });
 
+}
+
+// fetch
+// -----------------------------------------------------------------------------
+function $fetchEvent( key ){
+  //https://developer.mozilla.org/en-US/docs/Web/API/FetchEvent
+  addEventListener('fetch', event => {
+
+  if (event.request.method != 'GET') return;
+
+  // Prevent the default, and handle the request ourselves.
+  event.respondWith(async function() {
+    // Try to get the response from a cache.
+    const cache = await caches.open( key );
+    const cachedResponse = await cache.match(event.request);
+
+    if (cachedResponse) {
+      // If we found a match in the cache, return it, but also
+      // update the entry in the cache in the background.
+      event.waitUntil(cache.add(event.request));
+      return cachedResponse;
+    }
+
+    // If we didn't find a match in the cache, use the network.
+    return fetch(event.request);
+  }());
+});
 }

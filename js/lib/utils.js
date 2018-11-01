@@ -39,6 +39,8 @@ function $data( element, name, value ) {
     }
 }
 
+
+
 function $data_update( update_data ){
   let updated_data = [];
   let overview_trs = document.querySelectorAll('.overview tbody tr');
@@ -55,6 +57,9 @@ function $data_update( update_data ){
   }
   return updated_data;
 }
+
+
+
 
 function $event( trigger, target, callback ){
   let elements = document.querySelectorAll( target );

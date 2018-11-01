@@ -8,7 +8,9 @@ function $_Projecten(){
   let projecten_main_data = $data( 'main', 'projecten' ); // page data
   let projecten_overview_items = [ 'name', 'date' ]; // kolommen overzicht
 
-
+  $glob( '$callbacks', '$view', () => {
+    $view_notities();
+  });
   $callback = {
     '$overview': () => {
 
@@ -36,6 +38,7 @@ function $_Projecten(){
     let project_add_data = $data( '.add_form_container form', 'added' );
     projecten = new Project( project_add_data );
   });
+
 }
 
 function $view_notities(){

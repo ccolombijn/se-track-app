@@ -1,0 +1,13 @@
+CACHE MANIFEST
+
+index.html
+css\chc-app_styles.css
+favicon.png
+
+# Use from network if available
+NETWORK:
+html\network.html
+
+# Fallback content
+FALLBACK:
+html\fallback.html

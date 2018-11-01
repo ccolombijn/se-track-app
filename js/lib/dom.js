@@ -69,6 +69,24 @@ function $tableData( target ){
 
 
 }
+
+// select
+// -----------------------------------------------------------------------------
+
+function $selectElement( object, data, selected ){
+
+  let select = document.createElement( 'select' );
+  select.setAttribute( 'id', object.shortName() );
+
+  for( let item of data ){
+    let option = document.createElement( 'option' );
+    option.setAttribute( 'value', item.id );
+    option.innerHTML = item.name;
+    select.appendChild( option );
+  }
+}
+
+
 // misc
 // -----------------------------------------------------------------------------
 function $createElement( element ){

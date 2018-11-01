@@ -1,5 +1,8 @@
 'use strict';
-function $xhr( type, url, data ) {
+/*
+* js/lib/xhr.js
+*/
+function $xhr( type, url, data, callback ) {
   // initieer XMLHttpRequest
   let xhr = new XMLHttpRequest();
   let response;
@@ -8,7 +11,7 @@ function $xhr( type, url, data ) {
     if ( xhr.readyState === 4 && xhr.status === 200 ) {
       response = xhr.responseText;
 
-      
+      callback();
     }
   }
   // verzoek openen & verzenden
